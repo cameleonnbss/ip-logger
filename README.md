@@ -97,6 +97,7 @@ python3 ip_logger.py
 
 
 ---
+
 ## 🎭 Lure pages
 
 | Key | Page |
@@ -135,6 +136,7 @@ install.sh             Linux / macOS / Termux installer
 iplogger_config.json   Saved config (auto-created)
 ip_log.json            Captured visits (auto-created)
 docs.html              Documentation
+requirements.txt       (optional)
 ```
 
 ---
