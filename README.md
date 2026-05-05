@@ -32,23 +32,21 @@
 
 ## 📦 Installation
 
----
 
-📦 Installation
 
 🪟 Windows
 
-git clone https://github.com/cameleonnbss/ip-logger.git
+"git clone https://github.com/cameleonnbss/ip-logger.git
 cd ip-logger
 winget install Cloudflare.cloudflared
-install.bat
+install.bat"
 
 
 ---
 
 🐧 Linux / 🍎 macOS
 
-git clone https://github.com/cameleonnbss/ip-logger.git
+"git clone https://github.com/cameleonnbss/ip-logger.git
 cd ip-logger
 
 # Install cloudflared
@@ -60,21 +58,31 @@ sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
 pip3 install -r requirements.txt
 
 # Run
-python3 ip_logger.py
+python3 ip_logger.py"
 
 
 ---
 
 📱 Termux (Android)
 
-pkg update && pkg upgrade
+"pkg update && pkg upgrade
 pkg install git python cloudflared
 
 git clone https://github.com/cameleonnbss/ip-logger.git
 cd ip-logger
 
 pip install -r requirements.txt
-python ip_logger.py
+python ip_logger.py"
+
+
+---
+
+⚡ Quick start
+
+"git clone https://github.com/cameleonnbss/ip-logger.git
+cd ip-logger
+pip install -r requirements.txt
+python3 ip_logger.py"
 
 
 ---
