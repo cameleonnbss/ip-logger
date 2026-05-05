@@ -2,12 +2,11 @@
 title IP Logger v6 - Installer
 color 0B
 echo.
-echo  ========================================
-echo   IP Logger v6  --  Installer
-echo  ========================================
+echo  
+echo   IP Logger v6  --  Installer by camzzz
+echo  
 echo.
 
-:: Python
 python --version >nul 2>&1
 if not errorlevel 1 (
     echo  [*] Installation de colorama...
@@ -20,7 +19,6 @@ if errorlevel 1 (
 )
 echo  [OK] Python detecte
 
-:: cloudflared
 cloudflared --version >nul 2>&1
 if errorlevel 1 (
     echo  [*] Installation de cloudflared via winget...
