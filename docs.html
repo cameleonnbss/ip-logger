@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IP Logger — Docs</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--s1:#0f0f0f;--s2:#141414;
+  --border:rgba(255,255,255,.06);--border-r:rgba(239,68,68,.2);
+  --red:#ef4444;--red2:#b91c1c;
+  --green:#22c55e;--yellow:#eab308;--blue:#3b82f6;--purple:#a855f7;
+  --text:#f3f4f6;--muted:#6b7280;--muted2:#9ca3af;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter','Arial',sans-serif;font-size:14px;line-height:1.7}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 55% 30% at 50% -5%,rgba(239,68,68,.06),transparent),
+             radial-gradient(ellipse 35% 20% at 90% 95%,rgba(185,28,28,.04),transparent)}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(239,68,68,.25);border-radius:4px}
+
+/* ── Nav ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.9);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);padding:0 40px;height:54px;
+  display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px rgba(239,68,68,.7);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.nav-title{font-size:15px;font-weight:700;color:var(--text)}
+.nav-title span{color:var(--red)}
+.nav-links{display:flex;gap:4px}
+.nav-link{padding:5px 12px;border-radius:7px;font-size:12px;font-weight:500;color:var(--muted2);text-decoration:none;transition:all .2s}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.nav-gh{padding:5px 14px;border-radius:7px;font-size:12px;font-weight:600;
+  color:#fff;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);
+  text-decoration:none;transition:all .2s}
+.nav-gh:hover{background:rgba(239,68,68,.25);box-shadow:0 0 12px rgba(239,68,68,.2)}
+
+/* ── Layout ── */
+.layout{display:flex;max-width:1200px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+
+/* ── Sidebar ── */
+aside{width:220px;flex-shrink:0;position:sticky;top:54px;height:calc(100vh - 54px);
+  overflow-y:auto;padding:32px 0 32px 0;border-right:1px solid var(--border)}
+.aside-section{margin-bottom:24px;padding-right:20px}
+.aside-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);
+  font-weight:700;margin-bottom:8px;padding-left:2px}
+.aside-link{display:block;padding:5px 8px;border-radius:6px;font-size:12px;font-weight:500;
+  color:var(--muted2);text-decoration:none;transition:all .15s;border-left:2px solid transparent}
+.aside-link:hover{color:var(--text);background:rgba(255,255,255,.04);border-left-color:rgba(239,68,68,.3)}
+.aside-link.active{color:var(--red);background:rgba(239,68,68,.06);border-left-color:var(--red)}
+
+/* ── Content ── */
+main{flex:1;padding:48px 0 80px 48px;min-width:0}
+
+.hero{margin-bottom:56px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);
+  font-size:11px;font-weight:600;color:var(--red);margin-bottom:20px}
+.hero-badge span{width:5px;height:5px;border-radius:50%;background:var(--red);animation:pulse 2s infinite}
+.hero h1{font-size:42px;font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:16px}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero-sub{font-size:16px;color:var(--muted2);max-width:560px;line-height:1.6;margin-bottom:28px}
+.hero-ascii{background:rgba(0,0,0,.5);border:1px solid var(--border-r);border-radius:10px;
+  padding:20px 24px;font-family:'SF Mono',Consolas,monospace;font-size:12px;
+  color:var(--muted2);line-height:1.5;display:inline-block}
+.hero-ascii .red{color:var(--red);font-weight:700}
+
+/* ── Sections ── */
+.doc-section{margin-bottom:56px;scroll-margin-top:74px}
+.section-title{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px;
+  display:flex;align-items:center;gap:10px}
+.section-title .icon{font-size:20px}
+.section-divider{height:1px;background:linear-gradient(90deg,rgba(239,68,68,.3),transparent);margin:14px 0 24px}
+.section-sub{color:var(--muted2);font-size:14px;margin-bottom:20px;line-height:1.6}
+
+/* ── Cards ── */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:16px}
+.card{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:12px;
+  padding:18px 20px;position:relative;overflow:hidden;transition:border-color .2s}
+.card:hover{border-color:rgba(239,68,68,.25)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(239,68,68,.3),transparent)}
+.card-icon{font-size:22px;margin-bottom:10px}
+.card-title{font-size:13px;font-weight:700;margin-bottom:5px;color:var(--text)}
+.card-desc{font-size:12px;color:var(--muted2);line-height:1.5}
+
+/* ── Install blocks ── */
+.install-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.install-card{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.install-header{padding:12px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.install-header .dot{width:7px;height:7px;border-radius:50%;background:var(--red)}
+.install-body{padding:14px 16px}
+
+/* ── Code blocks ── */
+pre{background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.06);border-radius:8px;
+  padding:14px 16px;font-family:'SF Mono',Consolas,monospace;font-size:12px;
+  color:#d1d5db;overflow-x:auto;line-height:1.6;margin-bottom:0}
+code{font-family:'SF Mono',Consolas,monospace;font-size:12px;
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);
+  padding:1px 6px;border-radius:4px;color:#fca5a5}
+
+/* ── Tables ── */
+.tbl-wrap{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:8px}
+table{width:100%;border-collapse:collapse}
+thead th{padding:9px 14px;text-align:left;font-size:10px;text-transform:uppercase;
+  letter-spacing:.7px;color:var(--muted);font-weight:700;
+  background:rgba(0,0,0,.3);border-bottom:1px solid var(--border)}
+tbody td{padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.03);font-size:13px}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(239,68,68,.02)}
+td code{font-size:11px}
+
+/* ── Badges ── */
+.badge{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.b-red{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.b-green{background:rgba(34,197,94,.08);color:#4ade80;border:1px solid rgba(34,197,94,.15)}
+.b-blue{background:rgba(59,130,246,.1);color:#60a5fa;border:1px solid rgba(59,130,246,.2)}
+.b-yellow{background:rgba(234,179,8,.08);color:#fbbf24;border:1px solid rgba(234,179,8,.15)}
+.b-purple{background:rgba(168,85,247,.1);color:#d8b4fe;border:1px solid rgba(168,85,247,.2)}
+
+/* ── Warning / info boxes ── */
+.box{border-radius:10px;padding:14px 18px;font-size:13px;line-height:1.6;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start}
+.box-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.box-warn{background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.2);color:#fde68a}
+.box-info{background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.2);color:#bfdbfe}
+.box-tip{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);color:#bbf7d0}
+
+/* ── Menu preview ── */
+.menu-preview{background:rgba(0,0,0,.7);border:1px solid var(--border-r);border-radius:10px;
+  padding:20px 24px;font-family:'SF Mono',Consolas,monospace;font-size:12px;line-height:1.9}
+.mp-url{color:#4ade80;font-weight:700}
+.mp-dim{color:var(--muted)}
+.mp-key{color:var(--red)}
+.mp-val{color:var(--muted2)}
+.mp-label{color:#f3f4f6;font-weight:600}
+
+/* ── Data table pills ── */
+.pill{display:inline-flex;padding:1px 7px;border-radius:3px;font-size:10px;font-weight:600;
+  background:rgba(239,68,68,.08);color:#fca5a5;border:1px solid rgba(239,68,68,.15)}
+
+/* ── Footer ── */
+footer{background:rgba(0,0,0,.5);border-top:1px solid var(--border);
+  padding:28px 40px;text-align:center;color:var(--muted);font-size:12px;position:relative;z-index:1}
+footer a{color:var(--red);text-decoration:none}
+footer a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-dot"></div>
+    <div class="nav-title">IP <span>Logger</span></div>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="#install">Install</a>
+    <a class="nav-link" href="#usage">Usage</a>
+    <a class="nav-link" href="#lures">Lures</a>
+    <a class="nav-link" href="#data">Data</a>
+    <a class="nav-link" href="#dashboard">Dashboard</a>
+  </div>
+  <a class="nav-gh" href="https://github.com/cameleonnbss" target="_blank">github.com/cameleonnbss</a>
+</nav>
+
+<div class="layout">
+
+<aside>
+  <div class="aside-section">
+    <div class="aside-label">Getting started</div>
+    <a class="aside-link active" href="#intro">Introduction</a>
+    <a class="aside-link" href="#install">Installation</a>
+    <a class="aside-link" href="#usage">Usage</a>
+  </div>
+  <div class="aside-section">
+    <div class="aside-label">Features</div>
+    <a class="aside-link" href="#lures">Lure pages</a>
+    <a class="aside-link" href="#modes">Modes</a>
+    <a class="aside-link" href="#geoip">GeoIP</a>
+    <a class="aside-link" href="#fingerprint">Fingerprinting</a>
+    <a class="aside-link" href="#tunnel">Tunnel</a>
+  </div>
+  <div class="aside-section">
+    <div class="aside-label">Dashboard</div>
+    <a class="aside-link" href="#dashboard">Overview</a>
+    <a class="aside-link" href="#auth">Auth</a>
+    <a class="aside-link" href="#i18n">Languages</a>
+    <a class="aside-link" href="#endpoints">Endpoints</a>
+  </div>
+  <div class="aside-section">
+    <div class="aside-label">Reference</div>
+    <a class="aside-link" href="#data">Captured data</a>
+    <a class="aside-link" href="#config">Config file</a>
+    <a class="aside-link" href="#files">File structure</a>
+  </div>
+</aside>
+
+<main>
+
+<!-- HERO -->
+<div class="hero" id="intro">
+  <div class="hero-badge"><span></span> v7 — camzzz</div>
+  <h1>IP <em>Logger</em><br>Documentation</h1>
+  <p class="hero-sub">Advanced IP capture tool with Cloudflare tunnel, GeoIP enrichment, browser fingerprinting, and a dark web dashboard.</p>
+  <div class="hero-ascii">
+<span class="red">  _____  ___</span>       _
+<span class="red">  \_   \/ _ \</span>     | | ___   __ _  __ _  ___ _ __
+<span class="red">   / /\/ /_)/</span>     | |/ _ \ / _` |/ _` |/ _ \ '__|
+<span class="red">/\/ /_/ ___/</span>      | | (_) | (_| | (_| |  __/ |
+<span class="red">\____\/</span>           |_|\___/ \__, |\__, |\___|_|
+                             |___/ |___/
+  <span style="color:var(--muted)">by camzzz · github.com/cameleonnbss</span>
+  </div>
+</div>
+
+<!-- INSTALL -->
+<div class="doc-section" id="install">
+  <div class="section-title"><span class="icon">📦</span> Installation</div>
+  <div class="section-divider"></div>
+  <p class="section-sub">One command on every platform. <code>cloudflared</code> is auto-installed on first run if missing.</p>
+
+  <div class="install-grid">
+    <div class="install-card">
+      <div class="install-header"><div class="dot"></div> Windows</div>
+      <div class="install-body">
+        <pre>install.bat</pre>
+        <p style="font-size:12px;color:var(--muted2);margin-top:10px">Installs cloudflared via winget (fallback: direct download). Requires Python 3.8+.</p>
+      </div>
+    </div>
+    <div class="install-card">
+      <div class="install-header"><div class="dot"></div> Linux / macOS</div>
+      <div class="install-body">
+        <pre>bash install.sh
+python3 ip_logger.py</pre>
+        <p style="font-size:12px;color:var(--muted2);margin-top:10px">Auto-detects arch (amd64 / arm64 / arm). Works on Debian, Ubuntu, Arch, Fedora, macOS.</p>
+      </div>
+    </div>
+    <div class="install-card">
+      <div class="install-header"><div class="dot"></div> Termux (Android)</div>
+      <div class="install-body">
+        <pre>pkg update && pkg install python
+bash install.sh
+python ip_logger.py</pre>
+        <p style="font-size:12px;color:var(--muted2);margin-top:10px">Downloads cloudflared ARM binary directly. No root required.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="box box-info">
+    <span class="box-icon">ℹ️</span>
+    <span>If <code>cloudflared</code> is already installed it won't be reinstalled. The script checks before downloading.</span>
+  </div>
+</div>
+
+<!-- USAGE -->
+<div class="doc-section" id="usage">
+  <div class="section-title"><span class="icon">🚀</span> Usage</div>
+  <div class="section-divider"></div>
+  <p class="section-sub">Just run the script. The server starts, the tunnel connects automatically, and the interactive menu opens.</p>
+
+  <div class="tbl-wrap" style="margin-bottom:20px">
+    <table>
+      <thead><tr><th>Platform</th><th>Command</th></tr></thead>
+      <tbody>
+        <tr><td>Windows</td><td><code>python ip_logger.py</code></td></tr>
+        <tr><td>Linux / macOS</td><td><code>python3 ip_logger.py</code></td></tr>
+        <tr><td>Termux</td><td><code>python ip_logger.py</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p style="font-size:13px;color:var(--muted2);margin-bottom:16px">After launch, the tracking URL is shown in the status panel — that's the link you send to the target.</p>
+
+  <div class="menu-preview">
+<div class="mp-url">  ► https://xxxx.trycloudflare.com/t/abc123</div>
+<div class="mp-dim">  ──────────────────────────────────────────</div>
+<div>  <span class="mp-dim">Mode     </span>  <span class="mp-val">lure (shows page)</span></div>
+<div>  <span class="mp-dim">Lure     </span>  <span class="mp-val">captcha</span></div>
+<div>  <span class="mp-dim">Redirect </span>  <span class="mp-val">https://www.youtube.com</span></div>
+<div>  <span class="mp-dim">Dashboard</span>  <span class="mp-val">http://localhost:8080/logs</span></div>
+<div>  <span class="mp-dim">Password </span>  <span class="mp-val">enabled (Basic Auth)</span></div>
+<div>  <span class="mp-dim">Tunnel   </span>  <span style="color:#4ade80">● active</span></div>
+<div class="mp-dim">  ──────────────────────────────────────────</div>
+<br>
+<div>  <span class="mp-key">1</span>  <span class="mp-label">Mode           </span> <span class="mp-val">lure (shows page)</span></div>
+<div>  <span class="mp-key">2</span>  <span class="mp-label">Lure page      </span> <span class="mp-val">captcha</span></div>
+<div>  <span class="mp-key">3</span>  <span class="mp-label">Redirect to    </span> <span class="mp-val">https://www.youtube.com</span></div>
+<div>  <span class="mp-key">4</span>  <span class="mp-label">Port           </span> <span class="mp-val">8080</span></div>
+<div>  <span class="mp-key">5</span>  <span class="mp-label">URL slug       </span> <span class="mp-val">/t/abc123  ← link to send</span></div>
+<div>  <span class="mp-key">6</span>  <span class="mp-label">Password       </span> <span style="color:#4ade80">enabled</span></div>
+<div>  <span class="mp-key">7</span>  <span class="mp-label">Logs           </span> <span class="mp-val">0 entry(ies)</span></div>
+<div>  <span class="mp-key">8</span>  <span class="mp-label">Tunnel         </span> <span style="color:#4ade80">● active — cut</span></div>
+<div>  <span class="mp-key">9</span>  <span class="mp-label">Language       </span> <span class="mp-val">en</span></div>
+<div>  <span class="mp-dim">0  Quit</span></div>
+  </div>
+</div>
+
+<!-- LURES -->
+<div class="doc-section" id="lures">
+  <div class="section-title"><span class="icon">🎭</span> Lure pages</div>
+  <div class="section-divider"></div>
+  <p class="section-sub">10 fake pages that run the beacon script before redirecting. Each collects all available data while looking legitimate.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Key</th><th>Description</th><th>Redirect delay</th></tr></thead>
+      <tbody>
+        <tr><td><code>captcha</code></td><td>Cloudflare "Checking your browser..." with progress bar</td><td>~3s</td></tr>
+        <tr><td><code>google</code></td><td>Google Drive "Opening document..." with spinner</td><td>~3s</td></tr>
+        <tr><td><code>discord</code></td><td>Discord server invite card</td><td>on click</td></tr>
+        <tr><td><code>youtube</code></td><td>YouTube video loading screen</td><td>~4s</td></tr>
+        <tr><td><code>twitch</code></td><td>Twitch live stream "Connecting..."</td><td>~3.5s</td></tr>
+        <tr><td><code>netflix</code></td><td>Netflix "Just a moment..."</td><td>~4.5s</td></tr>
+        <tr><td><code>steam</code></td><td>Steam library progress bar</td><td>~3s</td></tr>
+        <tr><td><code>dropbox</code></td><td>Dropbox "Opening your file..."</td><td>~3s</td></tr>
+        <tr><td><code>404</code></td><td>Generic 404 error page</td><td>none</td></tr>
+        <tr><td><code>blank</code></td><td>Empty page — for SSRF / API callbacks</td><td>none</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-tip">
+    <span class="box-icon">💡</span>
+    <span>The beacon uses a <strong>synchronous XHR</strong> to guarantee data is sent before the redirect fires — stats are never lost even on slow connections.</span>
+  </div>
+</div>
+
+<!-- MODES -->
+<div class="doc-section" id="modes">
+  <div class="section-title"><span class="icon">↩️</span> Modes</div>
+  <div class="section-divider"></div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🎭</div>
+      <div class="card-title">Lure mode <span class="badge b-green">default</span></div>
+      <div class="card-desc">Shows a fake page (captcha, Google Drive, etc.) while collecting all data in the background. Best for social engineering.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">↩️</div>
+      <div class="card-title">Redirect mode</div>
+      <div class="card-desc">Instant 302 redirect to the target URL. Still runs the beacon in a micro-page before redirecting. Less suspicious for short links.</div>
+    </div>
+  </div>
+</div>
+
+<!-- GEOIP -->
+<div class="doc-section" id="geoip">
+  <div class="section-title"><span class="icon">🌍</span> GeoIP</div>
+  <div class="section-divider"></div>
+  <p class="section-sub">Three sources in cascade. If one fails or rate-limits, the next is tried automatically.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Source</th><th>Fields</th><th>Key detail</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="badge b-green">1st</span> ip-api.com</td>
+          <td>country, region, city, district, ZIP, ISP, org, ASN, lat/lon, mobile, proxy, hosting</td>
+          <td>Proxy/VPN/hosting flag</td>
+        </tr>
+        <tr>
+          <td><span class="badge b-yellow">2nd</span> freeipapi.com</td>
+          <td>country, region, city, ZIP, lat/lon</td>
+          <td>No key required</td>
+        </tr>
+        <tr>
+          <td><span class="badge b-blue">3rd</span> ipinfo.io</td>
+          <td>country, region, city, postal, org, lat/lon</td>
+          <td>Fallback</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box box-info">
+    <span class="box-icon">ℹ️</span>
+    <span>GeoIP runs in a background thread — it never delays the response to the target. Data is updated in the log file once enrichment completes.</span>
+  </div>
+</div>
+
+<!-- FINGERPRINT -->
+<div class="doc-section" id="fingerprint">
+  <div class="section-title"><span class="icon">🕵️</span> Fingerprinting</div>
+  <div class="section-divider"></div>
+  <p class="section-sub">The beacon script runs silently in the browser and sends a rich fingerprint before any redirect.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🖥️</div>
+      <div class="card-title">Hardware</div>
+      <div class="card-desc">Screen resolution, available size, DPR, RAM (deviceMemory), CPU core count, battery level & charging state.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌐</div>
+      <div class="card-title">Browser</div>
+      <div class="card-desc">Browser name/version, vendor, platform, plugin list (up to 6), User-Agent, language & locale chain.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎨</div>
+      <div class="card-title">Canvas & WebGL</div>
+      <div class="card-desc">Canvas fingerprint (last 32 chars of data URL), WebGL renderer + vendor — unique per GPU/driver combination.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">📶</div>
+      <div class="card-title">Network</div>
+      <div class="card-desc">Effective connection type (4G/WiFi/3G...), downlink speed, touch capability, touch point count.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🗺️</div>
+      <div class="card-title">GPS</div>
+      <div class="card-desc">Precise coordinates via browser Geolocation API (lat, lon, ± accuracy in meters). Only collected when already granted — no popup on most mobile browsers.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔧</div>
+      <div class="card-title">Misc</div>
+      <div class="card-desc">Timezone, cookies enabled, Do Not Track flag, timezone from Intl API.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TUNNEL -->
+<div class="doc-section" id="tunnel">
+  <div class="section-title"><span class="icon">🌐</span> Cloudflare Tunnel</div>
+  <div class="section-divider"></div>
+  <p class="section-sub">Quick tunnel — no account needed. Gets you a public <code>*.trycloudflare.com</code> URL in seconds.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <div class="card-title">Auto-install</div>
+      <div class="card-desc">If <code>cloudflared</code> is not found, it's installed automatically via winget (Windows), Homebrew (macOS), or direct binary download (Linux/Termux).</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔄</div>
+      <div class="card-title">Auto-start</div>
+      <div class="card-desc">Tunnel starts with the server. The public URL is displayed as soon as it's detected from cloudflared's output (stdout + stderr).</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎛️</div>
+      <div class="card-title">Toggle in menu</div>
+      <div class="card-desc">Option 8 in the menu lets you cut and restart the tunnel at any time without restarting the server or losing your logs.</div>
+    </div>
+  </div>
+
+  <div class="box box-warn">
+    <span class="box-icon">⚠️</span>
+    <span>Quick tunnel URLs are ephemeral — they change on every restart. Reconnecting gives a new URL.</span>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="doc-section" id="dashboard">
+  <div class="section-title"><span class="icon">📊</span> Dashboard</div>
+  <div class="section-divider"></div>
+  <p class="section-sub">Accessible at <code>http://localhost:PORT/logs</code> — dark UI with stat cards, sortable table, bar charts, and a per-capture detail modal.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">📋</div>
+      <div class="card-title">Captures tab</div>
+      <div class="card-desc">All visits in reverse order. Click any row to open a full detail modal with 30+ fields. Live search bar filters across all columns.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">📈</div>
+      <div class="card-title">Stats tab</div>
+      <div class="card-desc">Bar charts: top countries, browsers, operating systems, devices. Percentages calculated in real-time from log data.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚙️</div>
+      <div class="card-title">Config tab</div>
+      <div class="card-desc">Shows active tracking URLs, pixel URL, current lure, redirect target and log file path. One-click copy buttons.</div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH -->
+<div class="doc-section" id="auth">
+  <div class="section-title"><span class="icon">🔒</span> Dashboard auth</div>
+  <div class="section-divider"></div>
+  <p class="section-sub">Password protection uses HTTP Basic Auth — enforced server-side. The password never appears in the HTML source or in URLs.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Scenario</th><th>Behavior</th></tr></thead>
+      <tbody>
+        <tr><td>No password set</td><td>Dashboard is public — accessible without auth</td></tr>
+        <tr><td>Password set</td><td>Browser shows a native login popup (HTTP 401 + WWW-Authenticate header)</td></tr>
+        <tr><td>Wrong password</td><td>401 returned, browser prompts again</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p style="font-size:13px;color:var(--muted2);margin-top:12px">Set via option <code>6</code> in the CLI menu. Saved to <code>iplogger_config.json</code>.</p>
+</div>
+
+<!-- I18N -->
+<div class="doc-section" id="i18n">
+  <div class="section-title"><span class="icon">🌏</span> Languages</div>
+  <div class="section-divider"></div>
+  <p class="section-sub">Both the CLI and the dashboard reflect the selected language. Change via option <code>9</code> in the menu, then refresh the dashboard.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Code</th><th>Language</th><th>Covers</th></tr></thead>
+      <tbody>
+        <tr><td><code>en</code></td><td>English</td><td>CLI + Dashboard</td></tr>
+        <tr><td><code>fr</code></td><td>Français</td><td>CLI + Dashboard</td></tr>
+        <tr><td><code>ru</code></td><td>Русский</td><td>CLI + Dashboard</td></tr>
+        <tr><td><code>es</code></td><td>Español</td><td>CLI + Dashboard</td></tr>
+        <tr><td><code>de</code></td><td>Deutsch</td><td>CLI + Dashboard</td></tr>
+        <tr><td><code>zh</code></td><td>中文</td><td>CLI + Dashboard</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ENDPOINTS -->
+<div class="doc-section" id="endpoints">
+  <div class="section-title"><span class="icon">🔗</span> Endpoints</div>
+  <div class="section-divider"></div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>URL</th><th>Method</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>/t/&lt;token&gt;</code></td><td><span class="badge b-blue">GET</span></td><td>Main tracking URL — shows lure or redirects depending on mode</td></tr>
+        <tr><td><code>/pixel/&lt;token&gt;</code></td><td><span class="badge b-blue">GET</span></td><td>1×1 transparent GIF — silent tracking via image embed</td></tr>
+        <tr><td><code>/r/&lt;token&gt;</code></td><td><span class="badge b-blue">GET</span></td><td>Direct 302 redirect with logging</td></tr>
+        <tr><td><code>/beacon</code></td><td><span class="badge b-yellow">POST</span></td><td>Receives browser fingerprint data (JSON) from the lure page</td></tr>
+        <tr><td><code>/logs</code></td><td><span class="badge b-blue">GET</span></td><td>Dashboard HTML (Basic Auth if password set)</td></tr>
+        <tr><td><code>/logs/json</code></td><td><span class="badge b-blue">GET</span></td><td>Raw JSON export of all captures</td></tr>
+        <tr><td><code>/clear</code></td><td><span class="badge b-yellow">POST</span></td><td>Clears all log entries</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- DATA -->
+<div class="doc-section" id="data">
+  <div class="section-title"><span class="icon">📊</span> Captured data</div>
+  <div class="section-divider"></div>
+  <p class="section-sub">Every visit produces one JSON entry with up to 40 fields across 5 categories.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Category</th><th>Fields</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="badge b-red">Network</span></td>
+          <td>ip, isp, org, as, proxy, mobile, hosting flag</td>
+        </tr>
+        <tr>
+          <td><span class="badge b-blue">Location</span></td>
+          <td>country, country_code, region, city, district, zip, lat, lon</td>
+        </tr>
+        <tr>
+          <td><span class="badge b-green">GPS</span></td>
+          <td>geo_lat, geo_lon, geo_acc (browser Geolocation API)</td>
+        </tr>
+        <tr>
+          <td><span class="badge b-yellow">Browser</span></td>
+          <td>browser, os, device, platform, vendor, user_agent, plugins, webgl, canvas</td>
+        </tr>
+        <tr>
+          <td><span class="badge b-purple">Hardware</span></td>
+          <td>screen, avail, dpr, memory, cores, battery, connection, downlink, touch, touchpoints</td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted2)">Misc</td>
+          <td>timezone, lang, langs, cookies, doNotTrack, referer, path, method, timestamp, cf_ray</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CONFIG -->
+<div class="doc-section" id="config">
+  <div class="section-title"><span class="icon">💾</span> Config file</div>
+  <div class="section-divider"></div>
+  <p class="section-sub">Settings are auto-saved to <code>iplogger_config.json</code> after every change in the menu. Loaded automatically on next start.</p>
+
+  <pre>{
+  "port": 8080,
+  "mode": "lure",
+  "lure": "captcha",
+  "redirect": "https://www.youtube.com",
+  "secret": "yourpassword",
+  "track_token": "abc123xyz",
+  "lang": "en"
+}</pre>
+
+  <div class="box box-info" style="margin-top:14px">
+    <span class="box-icon">ℹ️</span>
+    <span><code>iplogger_config.json</code> and <code>ip_log.json</code> are in <code>.gitignore</code> — they won't be pushed to the repo.</span>
+  </div>
+</div>
+
+<!-- FILES -->
+<div class="doc-section" id="files">
+  <div class="section-title"><span class="icon">📁</span> File structure</div>
+  <div class="section-divider"></div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>ip_logger.py</code></td><td>Main script — server, tunnel, dashboard, CLI menu</td></tr>
+        <tr><td><code>install.bat</code></td><td>Windows installer (cloudflared + colorama)</td></tr>
+        <tr><td><code>install.sh</code></td><td>Linux / macOS / Termux installer</td></tr>
+        <tr><td><code>docs.html</code></td><td>This documentation page</td></tr>
+        <tr><td><code>README.md</code></td><td>GitHub repo README</td></tr>
+        <tr><td><code>.gitignore</code></td><td>Excludes logs and config from git</td></tr>
+        <tr><td><code>iplogger_config.json</code></td><td>Saved settings — auto-created, gitignored</td></tr>
+        <tr><td><code>ip_log.json</code></td><td>Captured visits — auto-created, gitignored</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</main>
+</div>
+
+<footer>
+  <p>IP Logger — by <a href="https://github.com/cameleonnbss">camzzz</a> &bull; For CTF, authorized pentesting and security research only.</p>
+</footer>
+
+<script>
+// Sidebar active link on scroll
+var links = document.querySelectorAll('.aside-link');
+var sections = Array.from(links).map(function(l){ return document.querySelector(l.getAttribute('href')) });
+function onScroll(){
+  var pos = window.scrollY + 80;
+  var cur = 0;
+  sections.forEach(function(s,i){ if(s && s.offsetTop <= pos) cur = i; });
+  links.forEach(function(l,i){ l.classList.toggle('active', i === cur); });
+}
+window.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+</script>
+</body>
+</html>
