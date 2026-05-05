@@ -32,21 +32,21 @@
 
 ## 📦 Installation
 
+Choose your platform below for the most accurate setup instructions.
 
+### 🪟 Windows
 
-🪟 Windows
-
-"git clone https://github.com/cameleonnbss/ip-logger.git
+```batch
+git clone https://github.com/cameleonnbss/ip-logger.git
 cd ip-logger
 winget install Cloudflare.cloudflared
-install.bat"
+install.bat
+```
 
+### 🐧 Linux / 🍎 macOS
 
----
-
-🐧 Linux / 🍎 macOS
-
-"git clone https://github.com/cameleonnbss/ip-logger.git
+```bash
+git clone https://github.com/cameleonnbss/ip-logger.git
 cd ip-logger
 
 # Install cloudflared
@@ -57,42 +57,37 @@ sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
 # Install dependencies
 pip3 install -r requirements.txt
 
-# Run
-python3 ip_logger.py"
+# Run the logger
+python3 ip_logger.py
+```
 
+### 📱 Termux (Android)
 
----
-
-📱 Termux (Android)
-
-"pkg update && pkg upgrade
+```bash
+pkg update && pkg upgrade
 pkg install git python cloudflared
 
 git clone https://github.com/cameleonnbss/ip-logger.git
 cd ip-logger
 
 pip install -r requirements.txt
-python ip_logger.py"
+python ip_logger.py
+```
 
+### ⚡ Quick Start (for most users)
 
----
-
-⚡ Quick start
-
-"git clone https://github.com/cameleonnbss/ip-logger.git
-cd ip-logger
-pip install -r requirements.txt
-python3 ip_logger.py"
-
-
----
-
-⚡ Quick start
-
+```bash
 git clone https://github.com/cameleonnbss/ip-logger.git
 cd ip-logger
 pip install -r requirements.txt
 python3 ip_logger.py
+```
+
+**Notes:**
+- Make sure you have Python 3.8+ installed.
+- Run these commands in your terminal / command prompt.
+- After running, follow any on-screen instructions from the script.
+```
 
 
 ---
