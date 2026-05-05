@@ -54,6 +54,9 @@ curl -LO https://github.com/cloudflare/cloudflared/releases/latest/download/clou
 chmod +x cloudflared-linux-amd64
 sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
 
+chmod +x install.sh
+./install.sh
+
 # Install dependencies
 pip3 install -r requirements.txt
 
@@ -69,6 +72,9 @@ pkg install git python cloudflared
 
 git clone https://github.com/cameleonnbss/ip-logger.git
 cd ip-logger
+
+chmod +x install.sh
+./install.sh
 
 pip install -r requirements.txt
 python ip_logger.py
