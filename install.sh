@@ -1,13 +1,11 @@
-#!/usr/bin/env bash
 set -e
 
 echo ""
 echo " ========================================"
-echo "  IP Logger v6  --  Installer (Linux)"
+echo "  IP Logger v6  --  Installer (for Linux)"
 echo " ========================================"
 echo ""
 
-# Python
 if ! command -v python3 &>/dev/null; then
     echo " [!] python3 non trouvé. Installation..."
     sudo apt-get update -qq && sudo apt-get install -y python3 python3-pip
@@ -15,11 +13,9 @@ else
     echo " [OK] $(python3 --version) détecté"
 fi
 
-# colorama
 python3 -m pip install colorama --quiet 2>/dev/null || true
 echo " [OK] colorama installé"
 
-# cloudflared
 if ! command -v cloudflared &>/dev/null; then
     echo " [*] Installation de cloudflared..."
     ARCH=$(uname -m)
