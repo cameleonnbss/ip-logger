@@ -32,37 +32,62 @@
 
 ## 📦 Installation
 
-### Windows
-```bat
+---
+
+📦 Installation
+
+🪟 Windows
+
+git clone https://github.com/cameleonnbss/ip-logger.git
+cd ip-logger
+winget install Cloudflare.cloudflared
 install.bat
-```
 
-### Linux / macOS
-```bash
-bash install.sh
+
+---
+
+🐧 Linux / 🍎 macOS
+
+git clone https://github.com/cameleonnbss/ip-logger.git
+cd ip-logger
+
+# Install cloudflared
+curl -LO https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+chmod +x cloudflared-linux-amd64
+sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
+
+# Install dependencies
+pip3 install -r requirements.txt
+
+# Run
 python3 ip_logger.py
-```
 
-### Termux
-```bash
-pkg update && pkg install python
-bash install.sh
+
+---
+
+📱 Termux (Android)
+
+pkg update && pkg upgrade
+pkg install git python cloudflared
+
+git clone https://github.com/cameleonnbss/ip-logger.git
+cd ip-logger
+
+pip install -r requirements.txt
 python ip_logger.py
-```
+
 
 ---
 
-## 🚀 Usage
+⚡ Quick start
 
-```bash
-python ip_logger.py      # Windows
-python3 ip_logger.py     # Linux / macOS / Termux
-```
+git clone https://github.com/cameleonnbss/ip-logger.git
+cd ip-logger
+pip install -r requirements.txt
+python3 ip_logger.py
 
-The server starts, tunnel connects, and the interactive menu opens automatically.
 
 ---
-
 ## 🎭 Lure pages
 
 | Key | Page |
